@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Машуль, ты умничка!</title>
+<style>
+:root{--bg:#fff1f5;--fg:#5a2a3c;--hi:#e0457b;--gr:#3f9a52;--br:#8a5a3a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0f16;--fg:#ffd9e6;--hi:#ff6b9d;--gr:#6fcf7f;--br:#c08a5a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a0f16;--fg:#ffd9e6;--hi:#ff6b9d;--gr:#6fcf7f;--br:#c08a5a;color-scheme:dark}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;user-select:none}
+#stage{position:relative;display:flex;flex-direction:column;align-items:center}
+h1{margin:0 0 1.2em;min-height:1.3em;font-size:clamp(20px,5.5vw,44px);color:var(--hi);text-align:center;text-shadow:0 0 14px color-mix(in srgb,var(--hi) 55%,transparent)}
+h1::after{content:"_";animation:blink 1s steps(1) infinite}
+h1.done::after{content:""}
+h1.done{animation:pulse 1.6s ease-in-out infinite}
+pre{margin:0;font:inherit;font-size:min(3.2vw,24px);line-height:1.15;white-space:pre}
+.h{color:var(--hi)}
+.g{color:var(--gr)}
+.b{color:var(--br)}
+.hint{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:12px;opacity:.55}
+.heart{position:absolute;left:50%;top:60%;color:var(--hi);pointer-events:none;animation:rise var(--d) ease-out forwards}
+@keyframes rise{0%{opacity:0;transform:translate(var(--x),0) scale(.5)}15%{opacity:1}100%{opacity:0;transform:translate(calc(var(--x) + var(--s)),-260px) scale(1.2)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes pulse{50%{transform:scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.heart{animation-duration:6s}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <h1 id="t"></h1>
+  <pre id="cats" aria-label="Милая кошечка на холме под деревом"></pre>
+</div>
+<div class="hint">нажми, чтобы добавить сердечек</div>
+<script>
+const g=s=>'{g}'+s+'{/}',A=`',"`,B=`"',`;
+const scene=[
+String.raw`{g}   /\     /\    /\      /\        .@@@@.      {/}`,
+String.raw`{g}  /##\   /##\  /##\    /##\     .@@@@@@@@@@.   {/}`,
+String.raw`{g} /####\ /####\/####\  /####\ .@@@@@@@@@@@@@@. {/}`,
+String.raw`{g}/######\/######\/######\/###'@@@@@@@@@@@@@@@@'{/}`,
+String.raw`       /\_/\                {g}  '@@@@@@@@@@@@'  {/}`,
+String.raw`      ( {E} )               {b}       |  |       {/}`,
+String.raw`       > {H} <                {b}       |  |       {/}`,
+String.raw`      /     \               {b}      /    \      {/}`,
+String.raw`     (  | |  )              {b}     /      \     {/}`,
+String.raw`{g}',"',"{/}\_|_|_/{T}{g}"',"',"',"',"{/}{g}',"',"',"',"',"',"{/}`,
+g('   .'+A.repeat(12)+"',.   "),
+g(' ('+B.repeat(14)+') '),
+g('('+A.repeat(14)+"',)")
+].join('\n');
+const looks=[{E:'o.o',H:'♥',T:'~ '},{E:'^.^',H:'♡',T:' ~'}];
+const pre=document.getElementById('cats');
+let f=0;
+function draw(){const k=looks[f];pre.innerHTML=scene.replace('{E}',k.E).replace('{H}',k.H).replace('{T}',k.T).replace(/@/g,f?'%':'@').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\{g\}/g,'<span class="g">').replace(/\{b\}/g,'<span class="b">').replace(/\{\/\}/g,'</span>').replace(/[♥♡]/g,'<span class="h">$&</span>');f^=1}
+draw();setInterval(draw,800);
+
+const T="Машуль, ты умничка!",t=document.getElementById('t');
+let i=0;
+(function type(){t.textContent=T.slice(0,i);if(i++<T.length)setTimeout(type,120);else t.classList.add('done')})();
+
+const G=['♥','♡','❤','♥'];
+function heart(){
+  const s=document.getElementById('stage'),h=document.createElement('span');
+  h.className='heart';h.textContent=G[Math.random()*G.length|0];
+  h.style.fontSize=(14+Math.random()*26)+'px';
+  h.style.setProperty('--x',(Math.random()*340-170)+'px');
+  h.style.setProperty('--s',(Math.random()*60-30)+'px');
+  h.style.setProperty('--d',(2.8+Math.random()*2.5)+'s');
+  s.appendChild(h);h.addEventListener('animationend',()=>h.remove());
+}
+setInterval(heart,350);
+document.body.addEventListener('click',()=>{for(let k=0;k<8;k++)setTimeout(heart,k*60)});
+</script>
+</body>
+</html>
